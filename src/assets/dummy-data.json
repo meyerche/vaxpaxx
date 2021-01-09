@@ -1,0 +1,29 @@
+[
+	{
+		"id": 1,
+		"lat": 37.311705929010934, 
+		"lng": -122.02370017797304,
+		"name": "Walgreens",
+		"address": "20011 Bollinger Rd, Cupertino, CA 95014",
+		"expire": "10:00 PM",
+		"doses": 3
+	},
+	{
+		"id": 2,
+		"lat": 37.353063382366685, 
+		"lng": -121.99262947054842,
+		"name": "Walgreens",
+		"address": "3460 El Camino Real, Santa Clara, CA 95051",
+		"expire": "10:00 PM",
+		"doses": 5
+	},
+	{
+		"id": 3,
+		"lat": 37.35272224241332, 
+		"lng": -122.05056518190652, 
+		"name": "Walgreens", 
+		"address": "1306 S Mary Ave, Sunnyvale, CA 94087",
+		"expire": "12:00 AM",
+		"doses": 2
+	}
+]
