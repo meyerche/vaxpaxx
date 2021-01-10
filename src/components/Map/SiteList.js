@@ -2,9 +2,6 @@ import React from "react";
 import Site from "./Site";
 
 class SiteList extends React.Component {
-    constructor(props) {
-        super(props);
-    }
 
     render() {
         const sites = this.props.sites;

@@ -5,9 +5,6 @@ import {Link} from "react-router-dom";
 import "./Header.css"
 
 class ButtonAppBar extends React.Component {
-    constructor(props) {
-        super(props);
-    }
 
     render() {
         const classes = makeStyles((theme) => ({
