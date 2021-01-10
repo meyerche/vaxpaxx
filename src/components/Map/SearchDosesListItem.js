@@ -21,7 +21,7 @@ const useStyles = makeStyles({
     },
 });
 
-export default function Site(props) {
+export default function SearchDosesListItem(props) {
     const classes = useStyles();
 
     return (

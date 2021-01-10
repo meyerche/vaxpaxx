@@ -1,6 +1,6 @@
 import React from "react";
 import "./App.css";
-import MyMap from "./components/Map/MyMap";
+import SearchDoses from "./components/Map/SearchDoses";
 import Header from "./components/Header";
 import Home from "./components/Home";
 import AddDoses from "./components/AddDoses";
@@ -21,7 +21,7 @@ class App extends React.Component {
                         <Switch>
                             <Route path={"/pharma"}><AddDoses /></Route>
                             <Route path={"/home"}><Home /></Route>
-                            <Route path={"/map"}><MyMap sites={data} /></Route>
+                            <Route path={"/map"}><SearchDoses sites={data} /></Route>
                             <Route path={"/"}><Home /></Route>
                         </Switch>
                     </Container>
@@ -31,7 +31,7 @@ class App extends React.Component {
 
           {/*/!*<div className="flex-container wrapper">*!/*/}
           {/*    <section className="page-content">*/}
-          {/*        /!*<MyMap />*!/*/}
+          {/*        /!*<SearchDoses />*!/*/}
           {/*        */}
           {/*    </section>*/}
           {/*/!*</div>*!/*/}
