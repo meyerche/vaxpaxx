@@ -9,10 +9,16 @@ form .txtLocation {
 
 form .selDistance {
     margin-right: 10px;
-    min-width: 20ch;
+    /*min-width: 20ch;*/
 }
 
 form .btnSubmit {
     color: white;
     background-color: green;
+}
+
+@media screen and (max-width: 425px) {
+    form .btnSubmit {
+        margin-top: 10px;
+    }
 }
