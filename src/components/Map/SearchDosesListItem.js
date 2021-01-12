@@ -3,6 +3,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
+import { Link } from "@material-ui/core";
+import { isMacOs, isIOS } from "react-device-detect";
 
 const useStyles = makeStyles({
     root: {
@@ -23,6 +25,13 @@ const useStyles = makeStyles({
 
 export default function SearchDosesListItem(props) {
     const classes = useStyles();
+    const geoLink = function() {
+        if (isMacOs || isIOS) {
+            return `https://maps.apple.com/?q=${props.site.address}`;
+        } else {
+            return `https://maps.google.com/maps/search/?api=1&query=${props.site.address}`;
+        }
+    }
 
     return (
         <Card className={classes.root} variant="outlined">
@@ -31,7 +40,9 @@ export default function SearchDosesListItem(props) {
                     {props.site.name}
                 </Typography>
                 <Typography className={classes.pos} color="textSecondary">
-                    {props.site.address}
+                    <Link href={geoLink()} target="_blank">
+                        {props.site.address}
+                    </Link>
                 </Typography>
                 <Typography variant="body2" component="p">
                     Doses available: {props.site.doses}
