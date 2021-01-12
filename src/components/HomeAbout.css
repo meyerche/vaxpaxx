@@ -1,0 +1,17 @@
+
+ul > li {
+    list-style-type: none;
+    font-weight: lighter;
+    padding-bottom: 15px;
+}
+
+ul > li:before{
+    content:attr(aria-label);
+    display: block;
+    font-weight:bold;
+    padding-bottom: 5px;
+}
+
+ul ol > li {
+    padding-bottom: 5px;
+}

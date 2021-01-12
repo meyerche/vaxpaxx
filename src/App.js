@@ -27,14 +27,6 @@ class App extends React.Component {
                     </Container>
                 </div>
             </Router>
-
-
-          {/*/!*<div className="flex-container wrapper">*!/*/}
-          {/*    <section className="page-content">*/}
-          {/*        /!*<SearchDoses />*!/*/}
-          {/*        */}
-          {/*    </section>*/}
-          {/*/!*</div>*!/*/}
         </div>
     );
   }

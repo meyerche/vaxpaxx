@@ -1,27 +1,36 @@
 import React from "react";
-import {Button, Grid} from "@material-ui/core";
+import {Button, Container, Grid} from "@material-ui/core";
 import { Link } from "react-router-dom";
+import HomeAbout from "./HomeAbout";
+import "./Home.css";
 
 function Home() {
     return (
-        <Grid
-            container
-            direction="column"
-            justify="space-around"
-            alignItems="center"
-            spacing={3}
-        >
-            <Grid item>
-                <Button variant="contained" size="large" color="secondary" >
-                    <Link to={"/pharma"}>Pharmacist</Link>
-                </Button>
+        <Container disableGutters>
+            <Grid
+                container
+                direction="column"
+                justify="space-around"
+                alignItems="center"
+                spacing={3}
+            >
+                <Grid item>
+                    <Button variant="contained" size="large" color="secondary" >
+                        <Link to={"/pharma"}>Pharmacist</Link>
+                    </Button>
+                </Grid>
+                <Grid item>
+                    <Button variant="contained" size="large" color="secondary" >
+                        <Link to={"/map"}>Patient</Link>
+                    </Button>
+                </Grid>
             </Grid>
-            <Grid item>
-                <Button variant="contained" size="large" color="secondary" >
-                    <Link to={"/map"}>Patient</Link>
-                </Button>
-            </Grid>
-        </Grid>
+
+            <Container className="aboutContainer">
+                <HomeAbout />
+            </Container>
+        </Container>
+
     );
 }
 

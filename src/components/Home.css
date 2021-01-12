@@ -2,3 +2,7 @@ a {
     text-decoration: none;
     color: inherit;
 }
+
+.aboutContainer {
+    padding-top: 20px;
+}
