@@ -8,7 +8,7 @@ class SearchDosesList extends React.Component {
         return (
             <div className="site-list">
                 {sites.map((singleSite) =>
-                    <SearchDosesListItem key={singleSite.id} site={singleSite} />
+                    <SearchDosesListItem key={singleSite.geohash} site={singleSite} />
                 )}
             </div>
         );

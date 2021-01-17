@@ -47,7 +47,7 @@ export default function SearchDosesListItem(props) {
                 <Typography variant="body2" component="p">
                     Doses available: {props.site.doses}
                     <br />
-                    Doses expire: {props.site.expire}
+                    Doses expire: {props.site.expiration}
                 </Typography>
             </CardContent>
         </Card>

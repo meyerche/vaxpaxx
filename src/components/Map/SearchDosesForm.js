@@ -3,63 +3,73 @@ import TextField from "@material-ui/core/TextField";
 import MenuItem from "@material-ui/core/MenuItem";
 import Button from "@material-ui/core/Button";
 import "./SearchDosesForm.css"
+import { useFormik } from "formik";
+import Axios from "axios";
 
-class SearchDosesForm extends React.Component {
-    constructor(props) {
-        super(props);
-        this.handleSearchSubmit = this.handleSearchSubmit.bind(this);
-    }
+function SearchDosesForm(props) {
+    const formik = useFormik({
+        initialValues: {
+            txtZip: '',
+            selDistance: 10,
+        },
+        onSubmit(values) {
+            // This will run when the form is submitted
+            Axios.get(`https://public.opendatasoft.com/api/records/1.0/search/?dataset=us-zip-code-latitude-and-longitude&q=${values.txtZip}`)
+                .then(res => {
+                    const lat = res.data.records[0].fields.latitude;
+                    const lng = res.data.records[0].fields.longitude;
+                    props.onDoseSearch(values.txtZip, values.selDistance, lat, lng);
+                })
+                .catch(err => {
+                    console.log(err);
+                    alert("Zip code was not valid.");
+                });
+        }
+    });
 
-    handleSearchSubmit(event) {
-        event.preventDefault();
-        const zip = event.target.elements.txtLocation.value;
-        const dist = event.target.elements.selDistance.value;
-        this.props.onDoseSearch(zip, dist);
-    }
-
-
-    render() {
-        return (
-            <div className="searchContainer">
-                <form onSubmit={this.handleSearchSubmit}>
-                    <TextField
-                        id="txtLocation"
-                        label="Zip Code"
-                        variant="outlined"
-                        type="number"
-                        size="small"
-                        name="txtLocation"
-                        InputLabelProps={{ shrink: true }}
-                        className="txtLocation"
-                    />
-                    <TextField
-                        id="selDistance"
-                        select
-                        label="Distance"
-                        variant="outlined"
-                        size="small"
-                        name="selDistance"
-                        InputLabelProps={{ shrink: true }}
-                        className="selDistance"
-                        defaultValue={10}
-                    >
-                        <MenuItem key={"5"} value={5}>5 Miles</MenuItem>
-                        <MenuItem key={"10"} value={10}>10 Miles</MenuItem>
-                        <MenuItem key={"20"} value={20}>20 Miles</MenuItem>
-                        <MenuItem key={"50"} value={50}>50 Miles</MenuItem>
-                    </TextField>
-                    <Button
-                        variant="contained"
-                        size="medium"
-                        type="submit"
-                        className="btnSubmit"
-                    >
-                        Go
-                    </Button>
-                </form>
-            </div>
-        );
-    }
+    return (
+        <div className="searchContainer">
+            <form onSubmit={formik.handleSubmit} noValidate>
+                <TextField
+                    id="txtZip"
+                    name="txtZip"
+                    label="Zip Code"
+                    className="txtZip"
+                    variant="outlined"
+                    type="number"
+                    size="small"
+                    InputLabelProps={{shrink: true}}
+                    value={formik.values.txtZip}
+                    onChange={formik.handleChange}
+                />
+                <TextField
+                    select
+                    id="selDistance"
+                    name="selDistance"
+                    label="Distance"
+                    className="selDistance"
+                    variant="outlined"
+                    size="small"
+                    InputLabelProps={{shrink: true}}
+                    value={formik.values.selDistance}
+                    onChange={formik.handleChange}
+                >
+                    <MenuItem key={"5"} value={5}>5 Miles</MenuItem>
+                    <MenuItem key={"10"} value={10}>10 Miles</MenuItem>
+                    <MenuItem key={"20"} value={20}>20 Miles</MenuItem>
+                    <MenuItem key={"50"} value={50}>50 Miles</MenuItem>
+                </TextField>
+                <Button
+                    variant="contained"
+                    size="medium"
+                    type="submit"
+                    className="btnSubmit"
+                >
+                    Go
+                </Button>
+            </form>
+        </div>
+    );
 }
 
 export default SearchDosesForm;
