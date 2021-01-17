@@ -27,19 +27,17 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function handleBlur(addr) {
-    console.log(addr);
+    console.log("blur", addr);
 }
 
 async function findLoc(addr) {
-    console.log("findLoc:  " + addr);
     const res = await axios.get(
         `https://nominatim.openstreetmap.org/search/${addr}?format=json&addressdetails=1&limit=1`)
 
-    console.log(res);
     const id = await res.data[0].osm_id;
     const lat = await Number(res.data[0].lat);
     const lng = await Number(res.data[0].lon);
-    console.log("findLoc res: " + lat + " " + lng);
+
     return {id, lat, lng};
 }
 
@@ -55,13 +53,11 @@ function AddDoses() {
         },
         async onSubmit(values) {
             // This will run when the form is submitted
-            console.log(values);
             const geoloc = await findLoc(values.address)
                 .catch(err => {
                     console.log(err);
                     alert('Error when searching Nominatim');
                 });
-            console.log("onSubmit:  " + geoloc.lat + " " + geoloc.lng);
 
             const hash = geohashForLocation([geoloc.lat, geoloc.lng]);
             var expTime = new Date();
@@ -77,8 +73,8 @@ function AddDoses() {
                 expiration: new Date(expTime),
                 doses: values.dosesAvailable
             })
-            .then(res => {
-                console.log(res.id);
+            .then((res) => {
+                alert('Success!  Vaccine site and expiring doses have been added.');
             });
         }
     });
