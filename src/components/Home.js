@@ -16,12 +16,12 @@ function Home() {
             >
                 <Grid item>
                     <Button variant="contained" size="large" color="secondary" >
-                        <Link to={"/pharma"}>Pharmacist</Link>
+                        <Link to={"/pharma"}>I'm a Pharmacist</Link>
                     </Button>
                 </Grid>
                 <Grid item>
                     <Button variant="contained" size="large" color="secondary" >
-                        <Link to={"/map"}>Patient</Link>
+                        <Link to={"/map"}>I'm looking to get vaccinated</Link>
                     </Button>
                 </Grid>
             </Grid>
