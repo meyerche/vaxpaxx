@@ -6,7 +6,7 @@ import MuiAlert from "@material-ui/lab/Alert";
 import {useFormik} from "formik";
 import firebase from "../firebase.js";
 import firebaseService from "../services/firebaseService";
-import {geohashForLocation} from "geofire-common";
+//import {geohashForLocation} from "geofire-common";
 //import MomentUtils from "@date-io/moment";
 //import { TimePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 
@@ -71,15 +71,17 @@ function AddDoses() {
         async onSubmit(values) {
             // This will run when the form is submitted
 
-            //set date to today at the time submitted in the form
+            // //set date to today at the time submitted in the form
             let expTime = new Date();
             expTime.setHours(values.expiration.split(":")[0], values.expiration.split(":")[1], 0, 0);
+            values.expiration = expTime;
 
             //check db for address
             const db = firebase.firestore();
             await firebaseService.findLocInDb(values.address)
                 .then(res => {
                     if (res.found) {
+                        console.log("if");
                         //address already exists in our database so update the record
                         db.collection('locations').doc(res.id)
                             .update({
@@ -102,41 +104,37 @@ function AddDoses() {
                     }
                     else {
                         //address does not exist in our database so create geolocation with nominatim service
-                        const geoloc = firebaseService.findLoc(values.address)
-                            .catch(error => {
+                        console.log("else");
+                        firebaseService.addNewLocation(values)
+                            .then((res) => {
+                                if (res.success) {
+                                    displaySnackbar(
+                                        "Success!  Vaccine site and expiring doses have been added.",
+                                        "success"
+                                    );
+                                }
+                                else {
+                                    displaySnackbar(
+                                        "Error finding address",
+                                        "error"
+                                    );
+                                }
+                            })
+                            .catch(() => {
                                 displaySnackbar(
                                     "Error finding address",
                                     "error"
                                 );
                             });
-
-                        //geohash for retrieving addresses by distance
-                        const hash = geohashForLocation([geoloc.lat, geoloc.lng]);
-
-                        //add new document to firebase after geolocating address
-                        const db = firebase.firestore();
-                        db.collection("locations").add({
-                                address: values.address,
-                                name: values.storeName,
-                                lat: geoloc.lat,
-                                lng: geoloc.lng,
-                                geohash: hash,
-                                expiration: new Date(expTime),
-                                doses: values.dosesAvailable
-                            })
-                            .then((res) => {
-                                displaySnackbar(
-                                    "Success!  Vaccine site and expiring doses have been added.",
-                                    "success"
-                                );
-                            });
                     }
                 })
                 .catch(error => {
+                    console.log(error);
                     displaySnackbar(
                         "An error has occurred while finding the address",
                         "error"
                     );
+
                     return {found: false, id: "error"};
                 });
         }

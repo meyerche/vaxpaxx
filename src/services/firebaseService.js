@@ -1,5 +1,6 @@
 import firebase from "../firebase";
 import axios from "axios";
+import {geohashForLocation} from "geofire-common";
 
 export default class FirebaseService {
 
@@ -10,6 +11,7 @@ export default class FirebaseService {
         const lat = await Number(res.data[0].lat);
         const lng = await Number(res.data[0].lon);
 
+        console.log("findLoc:  ", lat, lng);
         return {lat, lng};
     }
 
@@ -33,4 +35,43 @@ export default class FirebaseService {
                 return foundLoc;
             });
     }
+
+    static async addNewLocation(values) {
+        const db = firebase.firestore();
+
+        //set date to today at the time submitted in the form
+        // let expTime = new Date();
+        // expTime.setHours(values.expiration.split(":")[0], values.expiration.split(":")[1], 0, 0);
+
+        //geolocate with nominatim
+        const geoloc = await this.findLoc(values.address);
+
+        await console.log(geoloc);
+        //geohash for retrieving addresses by distance
+        const hash = await geohashForLocation([geoloc.lat, geoloc.lng]);
+
+        //add new document to firebase after geolocating address
+        return await db.collection("locations").add({
+                address: values.address,
+                name: values.storeName,
+                lat: geoloc.lat,
+                lng: geoloc.lng,
+                geohash: hash,
+                expiration: new Date(values.expiration),
+                doses: values.dosesAvailable
+            })
+            .then(() => {
+                return {success: true};
+            })
+            .catch(() => {
+                return {success: false};
+            });
+            // .then((res) => {
+            //     displaySnackbar(
+            //         "Success!  Vaccine site and expiring doses have been added.",
+            //         "success"
+            //     );
+            // });
+    }
+
 }
