@@ -5,7 +5,7 @@ import {Button, Container, FormHelperText, Snackbar} from "@material-ui/core";
 import MuiAlert from "@material-ui/lab/Alert";
 import {useFormik} from "formik";
 import firebase from "../firebase.js";
-import axios from "axios";
+import firebaseService from "../services/firebaseService";
 import {geohashForLocation} from "geofire-common";
 //import MomentUtils from "@date-io/moment";
 //import { TimePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
@@ -39,40 +39,6 @@ function Alert(props) {
     return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
 
-function handleBlur(addr) {
-    console.log("blur", addr);
-}
-
-// async function findLocInDb(addr) {
-//     const db = firebase.firestore();
-//     db.collection('locations').where('address', '==', addr)
-//         .get()
-//         .limit(1)
-//         .then(function(doc) {
-//             if (doc.exists) {
-//                 return doc.id;
-//             }
-//             else {
-//                 return null;
-//             }
-//         })
-//         .catch(
-//
-//         );
-// }
-
-async function findLoc(addr) {
-    console.log("searching nominatim....");
-    const res = await axios.get(
-        `https://nominatim.openstreetmap.org/search/${addr}?format=json&addressdetails=1&limit=1`)
-
-    const id = await res.data[0].osm_id;
-    const lat = await Number(res.data[0].lat);
-    const lng = await Number(res.data[0].lon);
-
-    return {id, lat, lng};
-}
-
 function AddDoses() {
     const [msgOpen, setMsgOpen] = useState(false);
     const [msgText, setMsgText] = useState("Success!  Vaccine site and expiring doses have been added.");
@@ -86,36 +52,13 @@ function AddDoses() {
         setMsgOpen(false);
     };
 
-    async function findLocInDb(addr) {
-        console.log('finding location in db ...')
+    const displaySnackbar = (msg, severity) => {
+        setSeverity(severity);
+        setMsgOpen(true);
+        setMsgText(msg);
 
-        const db = firebase.firestore();
-        return await db.collection("locations").where("address", "==", addr).limit(1)
-            .get()
-            .then(function (querySnapshot) {
-                let foundLoc = {}
-                querySnapshot.forEach(function (doc) {
-                    console.log(doc);
-                    console.log("doc exists: ", doc.exists, doc.id)
-                    let ret = {};
-                    if (doc.exists) {
-                        foundLoc.found = true;
-                        foundLoc.id = doc.id;
-                        console.log("found in db: ", ret);
-                    } else {
-                        foundLoc.found = false;
-                        foundLoc.id = "not found";
-                    }
-                });
-
-                return foundLoc;
-            })
-            .catch(err => {
-                setMsgOpen(true);
-                setMsgText("An error has occurred while finding the address");
-                setSeverity("error");
-                return {found: false, id: "error"};
-            });
+        if (severity === "success")
+            formik.resetForm();
     }
 
     const formik = useFormik({
@@ -134,10 +77,10 @@ function AddDoses() {
 
             //check db for address
             const db = firebase.firestore();
-            await findLocInDb(values.address)
+            await firebaseService.findLocInDb(values.address)
                 .then(res => {
-                    console.log("locId response:  ", res);
-                    if (res.found) {      //address already exists in our database
+                    if (res.found) {
+                        //address already exists in our database so update the record
                         db.collection('locations').doc(res.id)
                             .update({
                                 name: values.storeName,
@@ -145,56 +88,63 @@ function AddDoses() {
                                 doses: values.dosesAvailable
                             })
                             .then(() => {
-                                setSeverity("success");
-                                setMsgOpen(true);
-                                setMsgText("Success!  Expiring doses have been updated.")
+                                displaySnackbar(
+                                    "Success!  Expiring doses have been updated.",
+                                    "success"
+                                );
                             })
                             .catch(error => {
-                                setSeverity("error");
-                                setMsgOpen(true);
-                                setMsgText("Error updating doses.")
-                            })
-                    } else {        //address does not exist in our database so create geolocation with nominatim service
-                        console.log("in else clause:  ", res);
-                        const geoloc = findLoc(values.address)
-                            .catch(err => {
-                                console.log(err);
-                                alert('Error when searching Nominatim');
+                                displaySnackbar(
+                                    "Error updating doses.",
+                                    "error"
+                                );
+                            });
+                    }
+                    else {
+                        //address does not exist in our database so create geolocation with nominatim service
+                        const geoloc = firebaseService.findLoc(values.address)
+                            .catch(error => {
+                                displaySnackbar(
+                                    "Error finding address",
+                                    "error"
+                                );
                             });
 
+                        //geohash for retrieving addresses by distance
                         const hash = geohashForLocation([geoloc.lat, geoloc.lng]);
 
-
+                        //add new document to firebase after geolocating address
                         const db = firebase.firestore();
                         db.collection("locations").add({
-                            address: values.address,
-                            name: values.storeName,
-                            lat: geoloc.lat,
-                            lng: geoloc.lng,
-                            geohash: hash,
-                            expiration: new Date(expTime),
-                            doses: values.dosesAvailable
-                        })
+                                address: values.address,
+                                name: values.storeName,
+                                lat: geoloc.lat,
+                                lng: geoloc.lng,
+                                geohash: hash,
+                                expiration: new Date(expTime),
+                                doses: values.dosesAvailable
+                            })
                             .then((res) => {
-                                alert('Success!  Vaccine site and expiring doses have been added.');
+                                displaySnackbar(
+                                    "Success!  Vaccine site and expiring doses have been added.",
+                                    "success"
+                                );
                             });
-
                     }
+                })
+                .catch(error => {
+                    displaySnackbar(
+                        "An error has occurred while finding the address",
+                        "error"
+                    );
+                    return {found: false, id: "error"};
                 });
-
-            //if there...update with new doses
-            //if not there...find geolocation and then add
-
-
-
-
-
         }
     });
 
     return (
         <Container maxWidth={"sm"}>
-            <form className={classes.root} onSubmit={formik.handleSubmit} noValidate>
+            <form className={classes.root} onSubmit={formik.handleSubmit}>
                 <TextField
                     id="storeName"
                     name="storeName"
@@ -217,10 +167,6 @@ function AddDoses() {
                     InputLabelProps={{ shrink: true }}
                     value={formik.values.address}
                     onChange={formik.handleChange}
-                    onBlur={e => {
-                        formik.handleBlur(e);
-                        handleBlur(e.target.value);
-                    }}
                 />
                 <div className={classes.formFieldContainer}>
                     <TextField
