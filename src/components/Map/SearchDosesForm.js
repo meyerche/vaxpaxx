@@ -36,7 +36,6 @@ function SearchDosesForm(props) {
                     label="Zip Code"
                     className="txtZip"
                     variant="outlined"
-                    type="number"
                     size="small"
                     InputLabelProps={{shrink: true}}
                     value={formik.values.txtZip}
