@@ -11,7 +11,6 @@ export default class FirebaseService {
         const lat = await Number(res.data[0].lat);
         const lng = await Number(res.data[0].lon);
 
-        console.log("findLoc:  ", lat, lng);
         return {lat, lng};
     }
 
@@ -39,10 +38,6 @@ export default class FirebaseService {
     static async addNewLocation(values) {
         const db = firebase.firestore();
 
-        //set date to today at the time submitted in the form
-        // let expTime = new Date();
-        // expTime.setHours(values.expiration.split(":")[0], values.expiration.split(":")[1], 0, 0);
-
         //geolocate with nominatim
         const geoloc = await this.findLoc(values.address);
 
@@ -66,12 +61,6 @@ export default class FirebaseService {
             .catch(() => {
                 return {success: false};
             });
-            // .then((res) => {
-            //     displaySnackbar(
-            //         "Success!  Vaccine site and expiring doses have been added.",
-            //         "success"
-            //     );
-            // });
     }
 
 }

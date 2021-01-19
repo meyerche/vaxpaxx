@@ -21,7 +21,6 @@ function SearchDosesForm(props) {
                     props.onDoseSearch(values.txtZip, values.selDistance, lat, lng);
                 })
                 .catch(err => {
-                    console.log(err);
                     alert("Zip code was not valid.");
                 });
         }

@@ -4,7 +4,6 @@ import SearchDosesMap from "./SearchDosesMap";
 import SearchDosesList from "./SearchDosesList";
 import SearchDosesForm from "./SearchDosesForm";
 import Button from "@material-ui/core/Button";
-//import Axios from "axios";
 import firebase from "../../firebase.js";
 import {distanceBetween, geohashQueryBounds} from "geofire-common";
 import moment from "moment";
