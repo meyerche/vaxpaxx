@@ -27,6 +27,9 @@ export default function HomeAbout() {
                     <li>First come first serve</li>
                 </ol>
             </li>
+            <li aria-label="Contact:">
+                <a href="mailto:vaxpaxx@gmail.com">vaxpaxx@gmail.com</a>
+            </li>
         </ul>
     )
 }
